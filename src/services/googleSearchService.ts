@@ -76,7 +76,7 @@ export class GoogleSearchService {
       tbm: 'shop', // Google Shopping
       hl: language,
       gl: countryCode,
-      num: Math.min(maxResults, 20)
+      num: Math.min(maxResults, 20).toString()
     };
 
     const url = `${this.baseUrl}?${new URLSearchParams(params).toString()}`;
@@ -104,7 +104,7 @@ export class GoogleSearchService {
       q: searchQuery,
       hl: language,
       gl: countryCode,
-      num: Math.min(maxResults, 10)
+      num: Math.min(maxResults, 10).toString()
     };
 
     const url = `${this.baseUrl}?${new URLSearchParams(params).toString()}`;
@@ -190,7 +190,7 @@ export class GoogleSearchService {
               productName: this.cleanText(productName),
               price: this.cleanPrice(price),
               currency: this.getCurrencyForCountry(country),
-              link: this.normalizeUrl(link),
+              link: this.normalizeUrl(link) || link,
               websiteName: this.extractWebsiteName(link),
               availability: 'Check website',
               rating: rating,
@@ -228,7 +228,7 @@ export class GoogleSearchService {
               productName: this.cleanText(text),
               price: 'Price available on site',
               currency: this.getCurrencyForCountry(country),
-              link: this.normalizeUrl(href),
+              link: this.normalizeUrl(href) || href || '',
               websiteName: this.extractWebsiteName(href),
               availability: 'Check website',
               rating: undefined,
@@ -303,7 +303,7 @@ export class GoogleSearchService {
   /**
    * Extract product name from various elements
    */
-  private extractProductName($element: cheerio.Cheerio<cheerio.Element>): string {
+  private extractProductName($element: any): string {
     const selectors = [
       '.sh-np__product-title',
       '.PLla-pc',
@@ -348,7 +348,7 @@ export class GoogleSearchService {
   /**
    * Extract price from various elements
    */
-  private extractPrice($element: cheerio.Cheerio<cheerio.Element>): string {
+  private extractPrice($element: any): string {
     const selectors = [
       '.a30cke',
       '.g9WBQb',
@@ -393,7 +393,7 @@ export class GoogleSearchService {
   /**
    * Extract link from element
    */
-  private extractLink($element: cheerio.Cheerio<cheerio.Element>): string {
+  private extractLink($element: any): string {
     const link = $element.find('a').first().attr('href');
     return link || '';
   }
@@ -401,7 +401,7 @@ export class GoogleSearchService {
   /**
    * Extract seller information
    */
-  private extractSeller($element: cheerio.Cheerio<cheerio.Element>): string {
+  private extractSeller($element: any): string {
     const selectors = [
       '.sh-np__seller-name',
       '.merchant-name',
@@ -419,7 +419,7 @@ export class GoogleSearchService {
   /**
    * Extract image URL
    */
-  private extractImage($element: cheerio.Cheerio<cheerio.Element>): string {
+  private extractImage($element: any): string {
     const img = $element.find('img').first();
     return img.attr('src') || img.attr('data-src') || '';
   }
@@ -427,7 +427,7 @@ export class GoogleSearchService {
   /**
    * Extract rating if available
    */
-  private extractRating($element: cheerio.Cheerio<cheerio.Element>): number | undefined {
+  private extractRating($element: any): number | undefined {
     const ratingText = $element.find('.Rsc7Yb').text().trim();
     const match = ratingText.match(/(\d+(?:\.\d+)?)/);
     return match ? parseFloat(match[1]) : undefined;
