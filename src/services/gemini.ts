@@ -214,7 +214,7 @@ Return your analysis in this EXACT JSON format:
         },
         confidence: Math.min(Math.max(analysis.confidence || 70, 0), 100)
       };
-    } catch (error) {
+    } catch {
       // Fallback: simple price-based ranking
       return this.fallbackAnalysis(originalProducts);
     }
@@ -226,7 +226,7 @@ Return your analysis in this EXACT JSON format:
       if (!jsonMatch) return [];
       
       return JSON.parse(jsonMatch[0]);
-    } catch (error) {
+    } catch {
       return [];
     }
   }
@@ -238,7 +238,7 @@ Return your analysis in this EXACT JSON format:
       
       const enhanced = JSON.parse(jsonMatch[0]);
       return enhanced.length === originalProducts.length ? enhanced : originalProducts;
-    } catch (error) {
+    } catch {
       return originalProducts;
     }
   }

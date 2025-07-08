@@ -3,7 +3,6 @@ import { ProductSearchSchema, PriceComparisonError } from '../../../types';
 import { PriceComparisonService } from '../../../services/priceComparison';
 
 // Rate limiting setup
-const requestCounts = new Map<string, number>();
 const requestTimes = new Map<string, number[]>();
 const RATE_LIMIT = 10; // requests per hour
 const RATE_WINDOW = 60 * 60 * 1000; // 1 hour in milliseconds
@@ -83,39 +82,39 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Search API error:', error);
 
     // Handle known error types
-    if (error.type === 'INVALID_REQUEST') {
+    if (error instanceof PriceComparisonError && error.code === 'INVALID_REQUEST') {
       return NextResponse.json(
         { error: error.message },
         { status: 400 }
       );
     }
 
-    if (error.type === 'INVALID_COUNTRY') {
+    if (error instanceof PriceComparisonError && error.code === 'INVALID_COUNTRY') {
       return NextResponse.json(
         { error: error.message },
         { status: 400 }
       );
     }
 
-    if (error.type === 'NO_RESULTS_FOUND') {
+    if (error instanceof PriceComparisonError && error.code === 'NO_RESULTS_FOUND') {
       return NextResponse.json(
         { error: error.message },
         { status: 404 }
       );
     }
 
-    if (error.type === 'AI_SERVICE_ERROR') {
+    if (error instanceof PriceComparisonError && error.code === 'AI_SERVICE_ERROR') {
       return NextResponse.json(
         { error: 'AI analysis failed. Please try again.' },
         { status: 503 }
       );
     }
 
-    if (error.type === 'GOOGLE_SEARCH_ERROR') {
+    if (error instanceof PriceComparisonError && error.code === 'GOOGLE_SEARCH_ERROR') {
       return NextResponse.json(
         { error: 'Google search failed. Please try again or switch to direct scraping mode.' },
         { status: 503 }

@@ -3,9 +3,8 @@ import {
   ProductResult, 
   SearchResult, 
   PriceComparisonError,
-  AIAnalysisRequest 
 } from '../types';
-import { getWebsitesForCountry, isCountrySupported } from '../config/websites';
+import { getWebsitesForCountry } from '../config/websites';
 import { scraperService } from './scraper';
 import { googleSearchService } from './googleSearchService';
 import { geminiService, createGeminiService } from './gemini';
@@ -127,9 +126,7 @@ export class PriceComparisonService {
         confidence: aiAnalysis.confidence
       };
 
-    } catch (error) {
-      const searchTime = Date.now() - startTime;
-      
+    } catch (error) {  
       if (error instanceof PriceComparisonError) {
         throw error;
       }

@@ -25,18 +25,18 @@ export async function POST(request: NextRequest) {
       message: 'API key is valid' 
     });
     
-  } catch (error: any) {
+  } catch (error) {
     console.error('API key validation error:', error);
     
     let errorMessage = 'Invalid API key';
     
-    if (error.message?.includes('API_KEY_INVALID')) {
+    if (error instanceof Error && error.message?.includes('API_KEY_INVALID')) {
       errorMessage = 'The provided API key is invalid or expired';
-    } else if (error.message?.includes('PERMISSION_DENIED')) {
+    } else if (error instanceof Error && error.message?.includes('PERMISSION_DENIED')) {
       errorMessage = 'Permission denied. Please check your API key permissions';
-    } else if (error.message?.includes('QUOTA_EXCEEDED')) {
+    } else if (error instanceof Error && error.message?.includes('QUOTA_EXCEEDED')) {
       errorMessage = 'API quota exceeded. Please check your usage limits';
-    } else if (error.message?.includes('Failed to fetch')) {
+    } else if (error instanceof Error && error.message?.includes('Failed to fetch')) {
       errorMessage = 'Network error. Please check your internet connection';
     }
     

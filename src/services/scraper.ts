@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import puppeteer, { Browser, Page } from 'puppeteer';
+import puppeteer, { Browser } from 'puppeteer';
 import { WebsiteConfig, ProductResult, PriceComparisonError } from '../types';
 
 export class ScraperService {
@@ -124,7 +124,7 @@ export class ScraperService {
       // Wait for product containers to load
       try {
         await page.waitForSelector(website.selectors.productContainer, { timeout: 10000 });
-      } catch (error) {
+      } catch {
         console.warn(`Product container not found for ${website.name}`);
       }
 
@@ -175,8 +175,8 @@ export class ScraperService {
         };
 
         products.push(product);
-      } catch (error) {
-        console.warn(`Error parsing product ${index} from ${website.name}:`, error);
+      } catch {
+        console.warn(`Error parsing product ${index} from ${website.name}:`, Error);
       }
     });
 
@@ -186,7 +186,7 @@ export class ScraperService {
   /**
    * Extract text content from element
    */
-  private extractText($element: cheerio.Cheerio<cheerio.Element>, selector?: string): string {
+  private extractText($element: cheerio.Cheerio, selector?: string): string {
     if (!selector) return '';
     
     const element = $element.find(selector).first();
@@ -196,7 +196,7 @@ export class ScraperService {
   /**
    * Extract and resolve links
    */
-  private extractLink($element: cheerio.Cheerio<cheerio.Element>, selector: string, baseUrl: string): string {
+  private extractLink($element: cheerio.Cheerio, selector: string, baseUrl: string): string {
     const href = $element.find(selector).first().attr('href');
     if (!href) return '';
     
@@ -210,7 +210,7 @@ export class ScraperService {
   /**
    * Extract and resolve image URLs
    */
-  private extractImage($element: cheerio.Cheerio<cheerio.Element>, selector?: string, baseUrl?: string): string {
+  private extractImage($element: cheerio.Cheerio, selector?: string, baseUrl?: string): string {
     if (!selector) return '';
     
     const $img = $element.find(selector).first();
@@ -227,7 +227,7 @@ export class ScraperService {
   /**
    * Extract rating from various formats
    */
-  private extractRating($element: cheerio.Cheerio<cheerio.Element>, selector?: string): number | undefined {
+  private extractRating($element: cheerio.Cheerio, selector?: string): number | undefined {
     if (!selector) return undefined;
     
     const ratingText = this.extractText($element, selector);
